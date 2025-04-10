@@ -1,350 +1,61 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="حاسبتي الذكية">
-    <meta name="theme-color" content="#4CAF50">
-    <meta name="description" content="تطبيق حاسبة ذكية مع وضعي GOLD و BTC">
-    
-    <!-- أيقونات iOS -->
-    <link rel="apple-touch-icon" href="icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-152x152.png">
-    
-    <!-- شاشة البداية -->
-    <link rel="apple-touch-startup-image" href="icons/icon-512x512.png">
-    
-    <!-- ملف المانيفست -->
-    <link rel="manifest" href="manifest.json">
-    
-    <title>حاسبتي الذكية</title>
-    <style>
-        * {
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-            overscroll-behavior: none;
-        }
-        
-        .calculator {
-            background-color: white;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            overflow: hidden;
-        }
-        
-        .mode-selector {
-            display: flex;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .mode-btn {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            background-color: #f8f8f8;
-            border: none;
-            font-weight: bold;
-            font-size: 1.1em;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        
-        .mode-btn.active {
-            background-color: #4CAF50;
-            color: white;
-        }
-        
-        .mode-btn.btc {
-            background-color: #f8f8f8;
-        }
-        
-        .mode-btn.btc.active {
-            background-color: #f7931a;
-            color: white;
-        }
-        
-        .display {
-            padding: 25px;
-            text-align: center;
-            font-size: 2.5em;
-            background-color: #f8f8f8;
-            font-weight: 500;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background-color: #ddd;
-        }
-        
-        button {
-            border: none;
-            padding: 25px 15px;
-            font-size: 1.3em;
-            background-color: white;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-        
-        button:active {
-            background-color: #eee;
-        }
-        
-        .number {
-            font-weight: bold;
-        }
-        
-        .clear {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-        
-        .equals {
-            background-color: #4CAF50;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .equals:active {
-            background-color: #3d8b40;
-        }
-        
-        .operation-indicator {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.9em;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .operation-indicator.visible {
-            opacity: 1;
-        }
-        
-        @media (max-height: 700px) {
-            button {
-                padding: 20px 15px;
-            }
-            
-            .display {
-                padding: 20px;
-                min-height: 80px;
-            }
-        }
-        
-        /* تحسينات iOS */
-        @supports (-webkit-touch-callout: none) {
-            body {
-                padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            }
-            
-            .calculator {
-                max-width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="calculator">
-        <div class="mode-selector">
-            <button class="mode-btn active" onclick="setMode('gold')">GOLD</button>
-            <button class="mode-btn btc" onclick="setMode('btc')">BTC</button>
-        </div>
-        <div class="display" id="display">0</div>
-        <div class="buttons">
-            <button class="number" onclick="appendNumber('7')">7</button>
-            <button class="number" onclick="appendNumber('8')">8</button>
-            <button class="number" onclick="appendNumber('9')">9</button>
-            <button class="clear" onclick="clearAll()">C</button>
-            <button class="number" onclick="appendNumber('4')">4</button>
-            <button class="number" onclick="appendNumber('5')">5</button>
-            <button class="number" onclick="appendNumber('6')">6</button>
-            <button onclick="backspace()">⌫</button>
-            <button class="number" onclick="appendNumber('1')">1</button>
-            <button class="number" onclick="appendNumber('2')">2</button>
-            <button class="number" onclick="appendNumber('3')">3</button>
-            <button class="equals" onclick="calculate()">=</button>
-            <button class="number" onclick="appendNumber('0')">0</button>
-            <button class="number" onclick="appendNumber('00')">00</button>
-            <button class="number" onclick="appendNumber('.')">.</button>
-            <button onclick="toggleOperation()">+/-</button>
-        </div>
-    </div>
-    
-    <div id="operationIndicator" class="operation-indicator">وضع الجمع</div>
+انشاء تطبيق 
+وفق المعطيات 
 
-    <script>
-        let currentInput = '0';
-        let isNewInput = true;
-        let currentMode = 'gold'; // gold أو btc
-        let isAddMode = true;
+ذهب
+عند الطرح 
+اذا كان الرقم  2020  يكون الناتج كما يلي
+الاحاد  + العشرات + 15 = الناتج   .  السعر  - الناتج = الناتج النهائي 
+0+2+15‏ = 17
+2020-17=2003
 
-        function updateDisplay() {
-            document.getElementById('display').textContent = currentInput;
-        }
+عند الجمع  
+اذا كان الرقم  2020  يكون الناتج كما يلي
+احاد  + عشرات + 15 = الناتج   .  السعر  + الناتج = الناتج النهائي 
+0+2+15‏ = 17
+2020+17=2037
 
-        function appendNumber(number) {
-            if (isNewInput) {
-                currentInput = number;
-                isNewInput = false;
-            } else {
-                currentInput += number;
-            }
-            updateDisplay();
-        }
+بتكوين
+ عند الجمع
+اذا كان الرقم 82500 يكون الناتج كما يلي 
+مئات + الالوف +12= الناتج 
+ السعر+( الناتج*100)=الناتج النهائي
+5+2+12=19
+82500+(19*100)‏ = 84,400
+عند الطرح 
+اذا كان الرقم 82500 يكون الناتج كما يلي 
+مئات + الالوف +12= الناتج 
+ السعر+( الناتج*100)=الناتج النهائي
+5+2+12=19
+82500-(19*100)‏ = 80,600
 
-        function clearAll() {
-            currentInput = '0';
-            isNewInput = true;
-            updateDisplay();
-        }
+Us30
 
-        function backspace() {
-            if (currentInput.length === 1 || (currentInput.length === 2 && currentInput.startsWith('-'))) {
-                currentInput = '0';
-                isNewInput = true;
-            } else {
-                currentInput = currentInput.slice(0, -1);
-            }
-            updateDisplay();
-        }
+عند الجمع
+اذا كان الرقم 82500 يكون الناتج كما يلي 
+مئات + الالوف +15= الناتج 
+ السعر+( الناتج*100)=الناتج النهائي
+5+2+15‏ = 22
+82500+(22*100)‏ = 84,700
+عند الطرح 
+اذا كان الرقم 82500 يكون الناتج كما يلي 
+مئات + الالوف +15= الناتج 
+ السعر+( الناتج*100)=الناتج النهائي
+5+2+15‏ = 22
+82500-(22*100)‎ = 80,300
 
-        function toggleOperation() {
-            isAddMode = !isAddMode;
-            
-            // عرض مؤشر العملية
-            const indicator = document.getElementById('operationIndicator');
-            indicator.textContent = isAddMode ? 'وضع الجمع' : 'وضع الطرح';
-            indicator.classList.add('visible');
-            
-            // إخفاء المؤشر بعد ثانيتين
-            setTimeout(() => {
-                indicator.classList.remove('visible');
-            }, 2000);
-        }
+اريد عمل برنامج حاسبة يشتغل على الانترنت ويصل اله المشتركون وفيه كود مخصص للمشتركين ينتهي شهريا  وانا لدي اشتراك دائمي لا ينتهي 
 
-        function setMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // تغيير لون زر المساواة حسب الوضع
-            const equalsButton = document.querySelector('.equals');
-            if (mode === 'gold') {
-                equalsButton.style.backgroundColor = '#4CAF50';
-            } else {
-                equalsButton.style.backgroundColor = '#f7931a';
-            }
-        }
+شكل البرنامج. 
 
-        function calculateSpecial(number) {
-            const lastTwoDigits = Math.abs(number) % 100;
-            const tens = Math.floor(lastTwoDigits / 10);
-            const units = lastTwoDigits % 10;
-            
-            // تحديد القيمة حسب النوع
-            const addedValue = currentMode === 'gold' ? 15 : 12;
-            
-            const sum = tens + units + addedValue;
-            
-            return isAddMode ? number + sum : number - sum;
-        }
+خيارات احدد اختار  ( ذهب او بتكوين او us100) وعند تحديد الاختيار يشتغل وفق المعادلات اعلاه. وان يكون شكل احترافي يشبه تطبيق الحاسبة في الموبايل و تشغيله مناسب لشاشات الموبايل 
 
-        function calculate() {
-            const number = parseFloat(currentInput) || 0;
-            const result = calculateSpecial(number);
-            currentInput = result.toString();
-            isNewInput = true;
-            updateDisplay();
-            
-            // حفظ النتيجة
-            localStorage.setItem('lastResult', currentInput);
-            localStorage.setItem('lastMode', currentMode);
-            
-            // إضافة تأثير بصري للزر
-            const equalsButton = document.querySelector('.equals');
-            equalsButton.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                equalsButton.style.transform = 'scale(1)';
-            }, 150);
-        }
+صفحه لادارة المشتركين اشاهدها انا فقط ويكون الرمز الخاص بي للدخول هوه 5417562 وصلاحية وصولي لصفحة ادارة المشتركين و الحاسبة 
 
-        // عند تحميل الصفحة
-        window.addEventListener('load', function() {
-            const lastResult = localStorage.getItem('lastResult');
-            const lastMode = localStorage.getItem('lastMode');
-            
-            if (lastResult) {
-                currentInput = lastResult;
-                updateDisplay();
-            }
-            
-            if (lastMode) {
-                setMode(lastMode);
-                document.querySelector(lastMode === 'gold' ? '.mode-btn:first-child' : '.mode-btn.btc').classList.add('active');
-            }
-            
-            // منع السحب للأسفل لتحديث الصفحة على iOS
-            document.body.addEventListener('touchmove', function(e) {
-                if (e.touches.length > 1) return;
-                e.preventDefault();
-            }, { passive: false });
-            
-            // تسجيل Service Worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(reg => console.log('تم تسجيل Service Worker', reg))
-                    .catch(err => console.log('فشل تسجيل Service Worker', err));
-            }
-        });
-        
-        // إضافة دعم الاهتزاز عند الضغط على الأزرار
-        const buttons = document.querySelectorAll('button');
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                if ('vibrate' in navigator) {
-                    navigator.vibrate(15);
-                }
-            });
-        });
-        
-        // منع التكبير عند النقر المزدوج على iOS
-        document.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-        });
-    </script>
-</body>
-</html>
+اريد ان افتح به اشتراكات شهرية للمشتركين يعني اذا ضفت مشترك يعطيني رمز خاص به اعطيه للمشترك للدخول 
+اريد ان يكون حمايه عاليه ولا يمكن الوصول لكود البرنامج وحتى ان تمكنو من الوصول لكود البرناج يكون الكود مشفر 
+
+الاشتراك يشتغل على جهاز واحد فقط ولا يمكن تبدلة الجهاز 
+ صفحة الدخول تكون عبارة عن 
+اكتب الرمز 
+اذا كتب رمز الادارة تفتح له صفحة ادارة المشتركين والحاسبة 
+اذا كتب له رمز المشترك تفتح له الحاسبة
